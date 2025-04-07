@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 # Настройки отображения
 st.set_page_config(layout="wide")
-st.title("Симуляция PFE и EEPE для форвардного контракта")
+st.title("PFE для форвардного контракта")
 
 # Загрузка данных
 df = pd.read_csv('currencies_indicative_data.csv')
@@ -17,7 +17,7 @@ selected_secid = st.selectbox("Выберите валютную пару (secid
 
 df_sec = df[df['secid'] == selected_secid].copy()
 # Параметры симуляции
-n_simulations = st.sidebar.slider("Количество симуляций", 100, 10000, 1000, step=100)
+n_simulations = st.sidebar.slider("Количество итераций", 100, 10000, 1000, step=100)
 n_days = st.sidebar.slider("Горизонт моделирования (дней)", 30, 952, 252, step=21)
 confidence_level = st.sidebar.slider("Уровень доверия для PFE", 0.90, 0.99, 0.95)
 # Расчет логарифмических доходностей
@@ -30,7 +30,7 @@ current_rate = df_sec['rate'].iloc[-1]
 
 # Ввод форвардной цены
 forward_price = st.number_input(
-    "Введите форвардную цену (если не знаете — оставьте как текущий спот)",
+    "Введите форвардную цену",
     min_value=0.0,
     value=float(current_rate),
     step=0.01,
@@ -68,7 +68,7 @@ for t in range(n_days + 1):
 eepe = np.mean(epfe[1:])
 
 # График путей
-st.subheader("Симуляции путей цен")
+st.subheader("График путей")
 fig1, ax1 = plt.subplots(figsize=(12, 5))
 for i in range(min(100, n_simulations)):
     ax1.plot(all_paths[i, :], color='steelblue', alpha=0.1)
@@ -96,7 +96,7 @@ ax2.grid(True, alpha=0.3)
 st.pyplot(fig2)
 
 # Итоги
-st.subheader("Результаты анализа")
+st.subheader("Результаты")
 max_pfe = np.max(pfe)
 max_pfe_day = np.argmax(pfe)
 pfe_horizons = {
